@@ -1,3 +1,12 @@
+/**
+ * Returns a string representing the time since the given date.
+ * @param date The date to calculate the time since.
+ * @returns A string representing the time since the given date.
+ * @example
+ * timeAgo(new Date(2023, 0, 1)) // "1 month ago"
+ * timeAgo(new Date(2021, 0, 1)) // "2 years ago"
+ * timeAgo(new Date(2022, 0, 1)) // "1 year ago"
+ */
 export const timeAgo = (date: Date) => {
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
 
