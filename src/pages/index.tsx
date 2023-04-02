@@ -12,6 +12,15 @@ const CreatePost = () => {
   const user = useUser();
   const [content, setContent] = useState("");
 
+  const ctx = api.useContext();
+
+  const { mutate, isLoading } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setContent("");
+      void ctx.posts.getAll.invalidate();
+    },
+  });
+
   if (!user.isSignedIn) {
     return null;
   }
@@ -26,11 +35,22 @@ const CreatePost = () => {
         height={48}
       />
       <input
-        className="w-full bg-transparent outline-none"
+        className={
+          "w-full bg-transparent outline-none" +
+          (isLoading ? " opacity-50" : "")
+        }
         placeholder="What's on your mind?"
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        disabled={isLoading}
       />
+
+      <button
+        className="rounded-md bg-blue-500 px-4 py-2 text-white"
+        onClick={() => mutate({ content })}
+      >
+        Tweet
+      </button>
     </div>
   );
 };
@@ -74,7 +94,7 @@ const Feed = () => {
 
   return (
     <div className="flex flex-col">
-      {[...data, ...data].map(({ post, author }) => (
+      {data.map(({ post, author }) => (
         <PostView key={post.id} {...{ post, author }} />
       ))}
     </div>
