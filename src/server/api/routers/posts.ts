@@ -11,8 +11,8 @@ import {
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { type Post } from "@prisma/client";
 
-//
 type UserWithUsername = User & {
   username: string;
 };
@@ -25,6 +25,29 @@ const userFromClerkUser = (clerkUser: UserWithUsername) => {
     username: clerkUser.username,
     image: clerkUser.profileImageUrl,
   };
+};
+
+const addUsersToPosts = async (posts: Post[]) => {
+  const clerkUsers = await clerkClient.users.getUserList({
+    userId: posts.map((post) => post.authorId),
+  });
+
+  const result = posts.map((post) => {
+    const author = clerkUsers.find((user) => user.id === post.authorId);
+
+    if (!author || !author.username) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Could not find author",
+      });
+    }
+    return {
+      post,
+      author: userFromClerkUser({ ...author, username: author.username }),
+    };
+  });
+
+  return result;
 };
 
 // Create a new ratelimiter, that allows 3 requests per 1 minute
@@ -49,28 +72,28 @@ export const postsRouter = createTRPCRouter({
       },
     });
 
-    const clerkUsers = await clerkClient.users.getUserList({
-      userId: posts.map((post) => post.authorId),
-    });
-
-    const result = posts.map((post) => {
-      const author = clerkUsers.find((user) => user.id === post.authorId);
-
-      if (!author || !author.username) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Could not find author",
-        });
-      }
-
-      return {
-        post,
-        author: userFromClerkUser({ ...author, username: author.username }),
-      };
-    });
+    const result = await addUsersToPosts(posts);
 
     return result;
   }),
+  getPostsByUser: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const posts = await ctx.prisma.post.findMany({
+        where: {
+          authorId: input.userId,
+        },
+        take: 100,
+
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      const result = await addUsersToPosts(posts);
+
+      return result;
+    }),
 
   create: protectedProcedure
     .input(
