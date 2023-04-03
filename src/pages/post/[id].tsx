@@ -10,7 +10,7 @@ import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 type ProfilePageProps = NextPage<{ username: string }>;
 
 const ProfileFeed = ({ userId }: { userId: string }) => {
-  const { data: postsData } = api.posts.getPostsByUser.useQuery({
+  const { data: postsData } = api.posts.getByUser.useQuery({
     userId,
   });
 
