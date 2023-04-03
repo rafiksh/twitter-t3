@@ -3,7 +3,8 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
-import { LoadingPage } from "~/components/Loading";
+import { toast } from "react-hot-toast";
+import { LoadingPage, LoadingSpinner } from "~/components/Loading";
 
 import { type RouterOutputs, api } from "~/utils/api";
 import { timeAgo } from "~/utils/date";
@@ -14,10 +15,23 @@ const CreatePost = () => {
 
   const ctx = api.useContext();
 
-  const { mutate, isLoading } = api.posts.create.useMutation({
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
     onSuccess: () => {
-      setContent("");
       void ctx.posts.getAll.invalidate();
+      setContent("");
+    },
+    onError: (error) => {
+      const errorMessage = error.data?.zodError?.fieldErrors.content;
+
+      if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]);
+
+        setContent("");
+        return;
+      }
+
+      toast.error("Failed to create post, please try again later.");
+      setContent("");
     },
   });
 
@@ -37,20 +51,34 @@ const CreatePost = () => {
       <input
         className={
           "w-full bg-transparent outline-none" +
-          (isLoading ? " opacity-50" : "")
+          (isPosting ? " opacity-50" : "")
         }
         placeholder="What's on your mind?"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        disabled={isLoading}
+        disabled={isPosting}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && content !== "") {
+            e.preventDefault();
+            mutate({ content });
+          }
+        }}
       />
 
-      <button
-        className="rounded-md bg-blue-500 px-4 py-2 text-white"
-        onClick={() => mutate({ content })}
-      >
-        Tweet
-      </button>
+      {content !== "" && !isPosting && (
+        <button
+          className="rounded-md bg-blue-500 px-4 py-2 text-white"
+          onClick={() => mutate({ content })}
+          disabled={isPosting}
+        >
+          Tweet
+        </button>
+      )}
+      {isPosting && (
+        <div className="flex items-center">
+          <LoadingSpinner size={20} />
+        </div>
+      )}
     </div>
   );
 };
