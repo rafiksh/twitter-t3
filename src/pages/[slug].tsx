@@ -2,6 +2,10 @@ import { type GetStaticProps, type NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { api } from "~/utils/api";
+import { PageLayout } from "~/components/Layout";
+import { Tweet } from "~/components/Tweet";
+import { generateSSGHelper } from "~/server/helpers/ssgHelper";
+
 type ProfilePageProps = NextPage<{ username: string }>;
 
 const ProfileFeed = ({ userId }: { userId: string }) => {
@@ -63,22 +67,8 @@ const ProfilePage: ProfilePageProps = (props) => {
   );
 };
 
-import { createProxySSGHelpers } from "@trpc/react-query/ssg";
-import { appRouter } from "~/server/api/root";
-import { prisma } from "~/server/db";
-import SuperJSON from "superjson";
-import { PageLayout } from "~/components/Layout";
-import { Tweet } from "~/components/Tweet";
-
 export const getStaticProps: GetStaticProps = async (context) => {
-  const ssg = createProxySSGHelpers({
-    router: appRouter,
-    ctx: {
-      prisma,
-      userId: null,
-    },
-    transformer: SuperJSON, // adds superjson serialization
-  });
+  const ssg = generateSSGHelper();
   const slug = context.params?.slug;
 
   if (typeof slug !== "string") {
