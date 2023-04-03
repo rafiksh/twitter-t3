@@ -29,9 +29,11 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
 
   const session = getAuth(req);
 
+  const userId = session.userId;
+
   return {
     prisma,
-    session,
+    userId,
   };
 };
 
@@ -94,7 +96,7 @@ export const publicProcedure = t.procedure;
  * @see https://trpc.io/docs/procedure
  */
 const protectedMiddleware = t.middleware(async ({ ctx, next }) => {
-  if (!ctx.session.userId) {
+  if (!ctx.userId) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "You must be logged in to access this resource",
@@ -104,7 +106,7 @@ const protectedMiddleware = t.middleware(async ({ ctx, next }) => {
   return next({
     ctx: {
       ...ctx,
-      userId: ctx.session.userId,
+      userId: ctx.userId,
     },
   });
 });
