@@ -1,4 +1,4 @@
-# Twitter Clone using create-t3-app Next.js application with trpc and Prisma
+# Twitter Clone using typescript create-t3-app Next.js application with trpc Prisma
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
 
@@ -47,6 +47,7 @@ The following environment variables are used in this application:
 
 ## Built With
 
+- Typescript 
 - Next.js
 - trpc
 - Prisma
