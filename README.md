@@ -1,28 +1,59 @@
-# Create T3 App
+# Twitter Clone using create-t3-app Next.js application with trpc and Prisma
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
 
-## What's next? How do I make an app with this?
+## Introduction
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+This is a Twitter clone built using create-t3-app Next.js application with trpc and Prisma. The application is designed to replicate some of the key features of Twitter, including posting tweets, following and unfollowing users, and liking and retweeting tweets.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Getting Started
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+### Prerequisites
 
-## Learn More
+Before getting started with this project, you will need to have the following installed:
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- Node.js (version 14 or higher)
+- Yarn (version 1.22 or higher)
+- PostgreSQL
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### Installation
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+1. Clone this repository.
+2. Install dependencies by running `yarn install`.
+3. Create a new database in PostgreSQL.
+4. Create a `.env` file based on the `.env.example` file and set the appropriate environment variables.
+5. Run database migrations by running `yarn prisma migrate dev`.
+6. Start the development server by running `yarn dev`.
 
-## How do I deploy this?
+## Features
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+The Twitter clone includes the following features:
+
+- User authentication using Clerk
+- Rate limiting using Upstash Redis
+- Posting tweets
+- Following and unfollowing users
+- Liking and retweeting tweets
+
+## Environment Variables
+
+The following environment variables are used in this application:
+
+- `DATABASE_URL`: The URL of your PostgreSQL database.
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: The publishable key for Clerk authentication.
+- `CLERK_SECRET_KEY`: The secret key for Clerk authentication.
+- `UPSTASH_REDIS_REST_URL`: The URL for the Upstash Redis rate limiter.
+- `UPSTASH_REDIS_REST_TOKEN`: The token for the Upstash Redis rate limiter.
+
+## Built With
+
+- Next.js
+- trpc
+- Prisma
+- Clerk
+- Upstash Redis
+- PlanetScale (for database hosting)
+
+## Conclusion
+
+This Twitter clone is a great starting point for building your own social media application. It includes key features such as user authentication, rate limiting, and posting tweets, and is built using modern web technologies such as Next.js, trpc, and Prisma.
